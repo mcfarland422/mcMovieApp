@@ -1,6 +1,7 @@
+import _ from 'lodash';
 import React, { Component } from 'react';
 import './App.css';
-// import SearchBar from './components/search_bar';
+import SearchBar from './components/search_bar';
 import $ from 'jquery';
 import Poster from './components/Poster';
 
@@ -8,7 +9,7 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state = {
-      movies: []
+      movies: [],
     };
     // this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -24,19 +25,18 @@ class App extends Component {
     });
   }
 
-  onInputChange(term){
-    var value = document.getElementById('searchTerm').value;
-    document.getElementById('searchTerm').value = "";
-    var url = 'https://api.themoviedb.org/3/search/movie?api_key=fec8b5ab27b292a68294261bb21b04a5&query='+value
+  movieSearch(term) {
+    var url = 'https://api.themoviedb.org/3/search/movie?api_key=fec8b5ab27b292a68294261bb21b04a5&query='+term
     $.getJSON(url,(movieSearchData)=>{
       this.setState({
         // this will cause a re-render
         movies: movieSearchData.results
-      })
+      });
     });
   }
 
   render() {
+    const movieSearch = _.debounce((term) => { this.movieSearch(term) }, 300);
     var postersArray = this.state.movies.map((movie,index)=>{
       return(<Poster key={index} movie={movie} />)
     });
@@ -45,14 +45,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="col-sm-12 text-center">
-          <form onSubmit={this.handleSubmit}>
-            <input
-              id="searchTerm"
-              type="text"
-              placeholder="Search Movies"
-              onChange={event => this.onInputChange(event.target.value)} />
-            <button type="submit" className="btn btn-primary">Search</button>
-          </form>
+          <SearchBar onSearchTermChange={movieSearch} />
         </div>
         {postersArray}
       </div>
