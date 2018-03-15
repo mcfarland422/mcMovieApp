@@ -11,7 +11,6 @@ class App extends Component {
     this.state = {
       movies: [],
     };
-    // this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount(){
